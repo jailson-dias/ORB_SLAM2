@@ -1,16 +1,22 @@
-# import glob
-# from os import listdir
-# from os.path import isfile, join
+import glob
+import datetime
+tempo = datetime.datetime.now().timestamp() # pega o tempo atual e coloca ele no formato timestamp
 
-timestamp = 0.03332755 # tempo entre cada frame
+print ("lendo imagens")
 
-# fotos = glob.glob("rgb/*.png")
-# print (len(fotos))
-# fotos.sort()
+fotos = glob.glob("rgb/*.png") # lendo fotos da pasta rgb
+print ("Existe " + str(len(fotos)) + " imagens na pasta rgb")
+fotos.sort() # ordenando as fotos para coloca-las em ordem crescente no arquivo rgb.txt
+timestamp = 0.003037 # tempo entre cada frame
 
-# f = open("rgb.txt", "w")
+f = open("rgb.txt", "w") # abrindo o arquivo rgb.txt ou criando-o caso ele nao exista
 
-# for foto in fotos:
-#     f.write(foto + "\n")
+f.write("# color images\n")
+f.write("# timestamp filename\n")
 
-f.close()
+for i, foto in enumerate(fotos): # colocando o timestamp e o endereco das imagens no arquivo rgb.txt
+    f.write("{0:.6f}".format(tempo + i*timestamp) + " " + foto + "\n")
+
+f.close() # fechando o arquivo
+
+print ("operação finalizada")
