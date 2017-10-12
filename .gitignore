@@ -25,3 +25,4 @@ lib/
 # imagens geradas
 */*/rgb/
 *.mp4
+*/*/*.txt
