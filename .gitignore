@@ -26,3 +26,5 @@ lib/
 */*/rgb/
 *.mp4
 */*/*.txt
+.vscode/
+out
