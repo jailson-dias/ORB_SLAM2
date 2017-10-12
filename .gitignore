@@ -22,3 +22,6 @@ build/
 *~
 lib/
 
+# imagens geradas
+*/*/rgb/
+*.mp4
