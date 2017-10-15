@@ -145,12 +145,22 @@ void line(set<MapPoint*> points) {
     // cout << "depois" << endl;
 }
 
+float distance(cv::Mat v1, cv::Mat v2) {
+    float divi = abs(v1.at<float>(0) * v2.at<float>(0) + 
+                        v1.at<float>(1) * v2.at<float>(1) + 
+                        v1.at<float>(2) * v2.at<float>(2));
+    float norma = sqrt(pow(v2.at<float>(0),2) + pow(v2.at<float>(1),2) + pow(v2.at<float>(2),2));
+    return divi/norma;
+}
+
 void MapDrawer::DrawMapPoints()
 {
     const vector<MapPoint*> &vpMPs = mpMap->GetAllMapPoints();
     const vector<MapPoint*> &vpRefMPs = mpMap->GetReferenceMapPoints();
 
     set<MapPoint*> spRefMPs(vpRefMPs.begin(), vpRefMPs.end());
+    if(vpMPs.empty())
+        return;
 /* 
 ######################################################################################################
 ######################################################################################################
@@ -164,17 +174,73 @@ void MapDrawer::DrawMapPoints()
     // cout << cam << endl;
     // cv::Mat x;
     // cam.col(3).copyTo(x);
+
+
+
     if (!mCameraPose.empty()){
         cv::Mat cam = mCameraPose.rowRange(0,3).col(3);
         cout << "Camera: " << mCameraPose.rowRange(0,3).col(3) << endl << endl;
-        glLineWidth(mPointSize);
-        glBegin(GL_LINE_STRIP);
+        
+        /*glBegin(GL_LINE_STRIP);
         glColor3f(1.0,1.0,0.0);
         glVertex3f(cam.at<float>(0) + 1,cam.at<float>(1) + 1,0.1);
         glVertex3f(cam.at<float>(0) + 1,cam.at<float>(1) - 1,0.1);
         glVertex3f(cam.at<float>(0) - 1,cam.at<float>(1) + 1,0.1);
         glVertex3f(cam.at<float>(0) - 1,cam.at<float>(1) - 1,0.1);
+        glEnd();*/
+
+
+
+
+        const float &w = mCameraSize;
+        const float h = w*0.6;
+        const float z = w*0.9;
+
+        cv::Mat c1 = cv::Mat::zeros(3,1,CV_32F);
+        c1.at<float>(0) = (w*15*2/3.0);
+        c1.at<float>(1) = (0);
+        c1.at<float>(2) = (z*15*2/3.0);
+        cv::Mat c2 = cv::Mat::zeros(3,1,CV_32F);
+        c2.at<float>(0) = (-w*15*2/3.0);
+        c2.at<float>(1) = (0);
+        c2.at<float>(2) = (z*15*2/3.0);
+        cv::Mat c3 = cv::Mat::zeros(3,1,CV_32F);
+        c3.at<float>(0) = (0);
+        c3.at<float>(1) = (h*15*2/3.0);
+        c3.at<float>(2) = (z*15*2/3.0);
+        cv::Mat c4 = cv::Mat::zeros(3,1,CV_32F);
+        c4.at<float>(0) = (0);
+        c4.at<float>(1) = (-h*15*2/3.0);
+        c4.at<float>(2) = (z*15*2/3.0);
+
+        cv::Mat ponto = vpRefMPs[0]->GetWorldPos();
+        cout << endl << endl << endl << "VPREFMPS" << endl;
+        cout << "Ponto: [" << ponto.at<float>(0) << ", "
+                            << ponto.at<float>(1) << ", "  
+                            << ponto.at<float>(2) << "]"<< endl;
+        cout << "c1: " << distance(c1, ponto) << endl;
+        cout << "c2: " << distance(c2, ponto) << endl;
+        cout << "c3: " << distance(c3, ponto) << endl;
+        cout << "c4: " << distance(c4, ponto) << endl;
+
+        glLineWidth(mCameraLineWidth);
+        glBegin(GL_LINES);
+        glColor3f(1.0,0.0,0.0);
+
+        glVertex3f(ponto.at<float>(0),ponto.at<float>(1),ponto.at<float>(2));
+        glVertex3f(c1.at<float>(0),c1.at<float>(1),c1.at<float>(2));
+    
+        glVertex3f(ponto.at<float>(0),ponto.at<float>(1),ponto.at<float>(2));
+        glVertex3f(c2.at<float>(0),c2.at<float>(1),c2.at<float>(2));
+    
+        glVertex3f(ponto.at<float>(0),ponto.at<float>(1),ponto.at<float>(2));
+        glVertex3f(c3.at<float>(0),c3.at<float>(1),c3.at<float>(2));
+    
+        glVertex3f(ponto.at<float>(0),ponto.at<float>(1),ponto.at<float>(2));
+        glVertex3f(c4.at<float>(0),c4.at<float>(1),c4.at<float>(2));
+
         glEnd();
+
     }
     // if (vpMPs.size() > 0) {
     //     cout << endl << endl << endl << "VPMPS" << endl;
@@ -182,12 +248,12 @@ void MapDrawer::DrawMapPoints()
     //         cout << "Ponto " << i << ": " << vpMPs[i]->GetWorldPos() << endl;
     //     }
     // }
-    if (vpRefMPs.size() > 0) {
-        cout << endl << endl << endl << "VPREFMPS" << endl;
-        for (int i = 0; i<vpRefMPs.size();i++) {
-            cout << "Ponto " << i << ": " << vpRefMPs[i]->GetWorldPos() << endl;
-        }
-    }
+    // if (vpRefMPs.size() > 0) {
+    //     cout << endl << endl << endl << "VPREFMPS" << endl;
+    //     for (int i = 0; i<vpRefMPs.size();i++) {
+    //         cout << "Ponto " << i << ": " << vpRefMPs[i]->GetWorldPos() << endl;
+    //     }
+    // }
 /* 
 ######################################################################################################
 ######################################################################################################
@@ -196,8 +262,6 @@ void MapDrawer::DrawMapPoints()
 ######################################################################################################
 ######################################################################################################
 */
-    if(vpMPs.empty())
-        return;
 
     glPointSize(mPointSize);
     glBegin(GL_POINTS);
@@ -216,14 +280,14 @@ void MapDrawer::DrawMapPoints()
     glBegin(GL_POINTS);
     // glLineWidth(mPointSize);
     // glBegin(GL_LINE_STRIP);
-    glColor3f(1.0,0.0,0.0);
+    glColor3f(1.0,1.0,0.0);
 
     for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
     {
         if((*sit)->isBad())
             continue;
         cv::Mat pos = (*sit)->GetWorldPos();
-        glVertex3f(pos.at<float>(0),pos.at<float>(1),0);
+        glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
 
     }
     // line(spRefMPs);
@@ -329,8 +393,8 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph)
 void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
 {
     const float &w = mCameraSize;
-    const float h = w*0.75;
-    const float z = w*0.6;
+    const float h = w*0.6;
+    const float z = w*0.9;
 
     glPushMatrix();
 
@@ -344,13 +408,17 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
     glColor3f(0.0f,1.0f,0.0f);
     glBegin(GL_LINES);
     glVertex3f(0,0,0);
-    glVertex3f(w,h,z);
+    // glVertex3f(w,h,z);
+    glVertex3f(w*30,h*30,z*30);
     glVertex3f(0,0,0);
-    glVertex3f(w,-h,z);
+    // glVertex3f(w,-h,z);
+    glVertex3f(w*30,-h*30,z*30);
     glVertex3f(0,0,0);
-    glVertex3f(-w,-h,z);
+    // glVertex3f(-w,-h,z);
+    glVertex3f(-w*30,-h*30,z*30);
     glVertex3f(0,0,0);
-    glVertex3f(-w,h,z);
+    // glVertex3f(-w,h,z);
+    glVertex3f(-w*30,h*30,z*30);
 
     glVertex3f(w,h,z);
     glVertex3f(w,-h,z);
@@ -363,6 +431,28 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
 
     glVertex3f(-w,-h,z);
     glVertex3f(w,-h,z);
+
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+    // fora
+    glColor3f(0.0f,1.0f,1.0f);
+    
+    glVertex3f(w*30,h*30,z*30);
+    glVertex3f(w*30,-h*30,z*30);
+    glVertex3f(0,0,0);
+
+    glVertex3f(-w*30,h*30,z*30);
+    glVertex3f(-w*30,-h*30,z*30);
+    glVertex3f(0,0,0);
+
+    glVertex3f(-w*30,h*30,z*30);
+    glVertex3f(w*30,h*30,z*30);
+    glVertex3f(0,0,0);
+
+    glVertex3f(-w*30,-h*30,z*30);
+    glVertex3f(w*30,-h*30,z*30);
+    glVertex3f(0,0,0);
     glEnd();
 
     glPopMatrix();
