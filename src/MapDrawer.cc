@@ -21,12 +21,15 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
+#include <set>
 
 #include "MapDrawer.h"
 #include "MapPoint.h"
 #include "KeyFrame.h"
 #include <pangolin/pangolin.h>
 #include <mutex>
+
 
 namespace ORB_SLAM2
 {
@@ -43,6 +46,103 @@ MapDrawer::MapDrawer(Map* pMap, const string &strSettingPath):mpMap(pMap)
     mCameraSize = fSettings["Viewer.CameraSize"];
     mCameraLineWidth = fSettings["Viewer.CameraLineWidth"];
 
+}
+
+void line(set<MapPoint*> points) {
+    // int first = 0;
+    vector<cv::Mat> p;
+    // cout << "aqui" << endl;
+    for(set<MapPoint*>::iterator sit=points.begin(), send=points.end(); sit!=send; sit++)
+    {
+        if((*sit)->isBad())
+            continue;
+        p.push_back((*sit)->GetWorldPos());
+        // glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
+
+    }
+    cout << "meio" << endl;
+    vector<cv::Mat> res;
+    // res.push_back(a);
+    // cout << "copy 2" << endl;
+    res.insert(res.end(), p.begin(), p.end());
+    // cout << "copy" << endl;
+    while (!res.empty()) {
+        cv::Mat a = res[0];
+        // cout << "Erase w" << endl;
+        res.erase(res.begin());
+        // cout << "Erase" << endl;
+        vector<cv::Mat> aux;
+        for (int i = res.size() - 1; i >= 0;i--) {
+            // cout << "for" << endl;
+            if (abs(res[i].at<float>(0) - a.at<float>(0)) < 0.05) {
+                // res.push_back()
+                aux.push_back(res[i]);
+                res.erase(res.begin() + i);
+            }
+            // cout << "while" << endl;
+        }
+        glBegin(GL_LINE_STRIP);
+        glColor3f(1.0,0.0,0.0);
+        if (aux.size() > 5) {
+            for (int i = 0;i<aux.size();i++) {
+                glVertex3f(aux[i].at<float>(0),aux[i].at<float>(1),aux[i].at<float>(2));
+            }
+        }
+        glEnd();
+    }
+   /* res.insert(res.end(), p.begin(), p.end());
+    // cout << "copy" << endl;
+    while (!res.empty()) {
+        cv::Mat a = res[0];
+        // cout << "Erase w" << endl;
+        res.erase(res.begin());
+        // cout << "Erase" << endl;
+        vector<cv::Mat> aux;
+        for (int i = res.size() - 1; i >= 0;i--) {
+            // cout << "for" << endl;
+            if (abs(res[i].at<float>(1) - a.at<float>(1)) < 0.05) {
+                // res.push_back()
+                aux.push_back(res[i]);
+                res.erase(res.begin() + i);
+            }
+            // cout << "while" << endl;
+        }
+        glBegin(GL_LINE_STRIP);
+        glColor3f(0.0,1.0,0.0);
+        if (aux.size() > 5) {
+            for (int i = 0;i<aux.size();i++) {
+                glVertex3f(aux[i].at<float>(0),aux[i].at<float>(1),aux[i].at<float>(2));
+            }
+        }
+        glEnd();
+    }
+    res.insert(res.end(), p.begin(), p.end());
+    // cout << "copy" << endl;
+    while (!res.empty()) {
+        cv::Mat a = res[0];
+        // cout << "Erase w" << endl;
+        res.erase(res.begin());
+        // cout << "Erase" << endl;
+        vector<cv::Mat> aux;
+        for (int i = res.size() - 1; i >= 0;i--) {
+            // cout << "for" << endl;
+            if (abs(res[i].at<float>(2) - a.at<float>(2)) < 0.05) {
+                // res.push_back()
+                aux.push_back(res[i]);
+                res.erase(res.begin() + i);
+            }
+            // cout << "while" << endl;
+        }
+        glBegin(GL_LINE_STRIP);
+        glColor3f(0.0,0.0,1.0);
+        if (aux.size() > 5) {
+            for (int i = 0;i<aux.size();i++) {
+                glVertex3f(aux[i].at<float>(0),aux[i].at<float>(1),aux[i].at<float>(2));
+            }
+        }
+        glEnd();
+    }*/
+    // cout << "depois" << endl;
 }
 
 void MapDrawer::DrawMapPoints()
@@ -65,7 +165,16 @@ void MapDrawer::DrawMapPoints()
     // cv::Mat x;
     // cam.col(3).copyTo(x);
     if (!mCameraPose.empty()){
+        cv::Mat cam = mCameraPose.rowRange(0,3).col(3);
         cout << "Camera: " << mCameraPose.rowRange(0,3).col(3) << endl << endl;
+        glLineWidth(mPointSize);
+        glBegin(GL_LINE_STRIP);
+        glColor3f(1.0,1.0,0.0);
+        glVertex3f(cam.at<float>(0) + 1,cam.at<float>(1) + 1,0.1);
+        glVertex3f(cam.at<float>(0) + 1,cam.at<float>(1) - 1,0.1);
+        glVertex3f(cam.at<float>(0) - 1,cam.at<float>(1) + 1,0.1);
+        glVertex3f(cam.at<float>(0) - 1,cam.at<float>(1) - 1,0.1);
+        glEnd();
     }
     // if (vpMPs.size() > 0) {
     //     cout << endl << endl << endl << "VPMPS" << endl;
@@ -73,12 +182,12 @@ void MapDrawer::DrawMapPoints()
     //         cout << "Ponto " << i << ": " << vpMPs[i]->GetWorldPos() << endl;
     //     }
     // }
-    // if (vpRefMPs.size() > 0) {
-    //     cout << endl << endl << endl << "VPREFMPS" << endl;
-    //     for (int i = 0; i<vpRefMPs.size();i++) {
-    //         cout << "Ponto " << i << ": " << vpRefMPs[i]->GetWorldPos() << endl;
-    //     }
-    // }
+    if (vpRefMPs.size() > 0) {
+        cout << endl << endl << endl << "VPREFMPS" << endl;
+        for (int i = 0; i<vpRefMPs.size();i++) {
+            cout << "Ponto " << i << ": " << vpRefMPs[i]->GetWorldPos() << endl;
+        }
+    }
 /* 
 ######################################################################################################
 ######################################################################################################
@@ -105,6 +214,8 @@ void MapDrawer::DrawMapPoints()
 
     glPointSize(mPointSize);
     glBegin(GL_POINTS);
+    // glLineWidth(mPointSize);
+    // glBegin(GL_LINE_STRIP);
     glColor3f(1.0,0.0,0.0);
 
     for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
@@ -112,10 +223,10 @@ void MapDrawer::DrawMapPoints()
         if((*sit)->isBad())
             continue;
         cv::Mat pos = (*sit)->GetWorldPos();
-        glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
+        glVertex3f(pos.at<float>(0),pos.at<float>(1),0);
 
     }
-
+    // line(spRefMPs);
     glEnd();
 }
 
