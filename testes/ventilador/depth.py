@@ -12,7 +12,6 @@ print ("lendo imagens")
 fotos = glob.glob("rgb/*.png") # lendo fotos da pasta rgb
 print ("Existe " + str(len(fotos)) + " imagens na pasta rgb")
 fotos.sort() # ordenando as fotos para coloca-las em ordem crescente no arquivo rgb.txt
-timestamp = 0.033333 # tempo entre cada frame
 
 directory = "depth"
 
@@ -44,6 +43,7 @@ for i, f in enumerate(fotos[1:]):
 
     plt.savefig(directory + "/" + "{0:06}".format(i + 1) + ".png",bbox_inches='tight', pad_inches=0, transparent = True)
 
+timestamp = 0.033333 # tempo entre cada frame
 f = open("depth.txt", "w") # abrindo o arquivo rgb.txt ou criando-o caso ele nao exista
 
 f.write("# color images\n")

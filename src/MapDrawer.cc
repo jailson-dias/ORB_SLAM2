@@ -146,9 +146,9 @@ void line(set<MapPoint*> points) {
 }
 
 float distance(cv::Mat v1, cv::Mat v2) {
-    float divi = abs(v1.at<float>(0) * v2.at<float>(0) + 
+    float divi = v1.at<float>(0) * v2.at<float>(0) + 
                         v1.at<float>(1) * v2.at<float>(1) + 
-                        v1.at<float>(2) * v2.at<float>(2));
+                        v1.at<float>(2) * v2.at<float>(2);
     float norma = sqrt(pow(v2.at<float>(0),2) + pow(v2.at<float>(1),2) + pow(v2.at<float>(2),2));
     return divi/norma;
 }
@@ -175,7 +175,7 @@ void MapDrawer::DrawMapPoints()
     // cv::Mat x;
     // cam.col(3).copyTo(x);
 
-
+/*
 
     if (!mCameraPose.empty()){
         cv::Mat cam = mCameraPose.rowRange(0,3).col(3);
@@ -188,7 +188,7 @@ void MapDrawer::DrawMapPoints()
         glVertex3f(cam.at<float>(0) - 1,cam.at<float>(1) + 1,0.1);
         glVertex3f(cam.at<float>(0) - 1,cam.at<float>(1) - 1,0.1);
         glEnd();*/
-
+/*
 
 
 
@@ -196,23 +196,46 @@ void MapDrawer::DrawMapPoints()
         const float h = w*0.6;
         const float z = w*0.9;
 
-        cv::Mat c1 = cv::Mat::zeros(3,1,CV_32F);
-        c1.at<float>(0) = (w*15*2/3.0);
-        c1.at<float>(1) = (0);
-        c1.at<float>(2) = (z*15*2/3.0);
-        cv::Mat c2 = cv::Mat::zeros(3,1,CV_32F);
-        c2.at<float>(0) = (-w*15*2/3.0);
-        c2.at<float>(1) = (0);
-        c2.at<float>(2) = (z*15*2/3.0);
-        cv::Mat c3 = cv::Mat::zeros(3,1,CV_32F);
-        c3.at<float>(0) = (0);
-        c3.at<float>(1) = (h*15*2/3.0);
-        c3.at<float>(2) = (z*15*2/3.0);
-        cv::Mat c4 = cv::Mat::zeros(3,1,CV_32F);
-        c4.at<float>(0) = (0);
-        c4.at<float>(1) = (-h*15*2/3.0);
-        c4.at<float>(2) = (z*15*2/3.0);
+        float x1, x2,x3;
+        x1 = cam.at<float>(0);
+        x2 = cam.at<float>(1);
+        x3 = cam.at<float>(2);
 
+        cv::Mat c1 = cv::Mat::zeros(3,1,CV_32F);
+        c1.at<float>(0) = ((x1*3 + w*30*2)/2.0/3.0);
+        c1.at<float>(1) = ((x2*3)/2.0/3.0);
+        c1.at<float>(2) = ((x3*3 + z*30*2)/2.0/3.0);
+        cv::Mat c2 = cv::Mat::zeros(3,1,CV_32F);
+        c2.at<float>(0) = ((x1*3 - w*30*2)/2.0/3.0);
+        c2.at<float>(1) = ((x2*3)/2.0/3.0);
+        c2.at<float>(2) = ((x3*3 + z*30*2)/2.0/3.0);
+        cv::Mat c3 = cv::Mat::zeros(3,1,CV_32F);
+        c3.at<float>(0) = ((x1*3)/2.0/3.0);
+        c3.at<float>(1) = ((x2*3 + h*30*2)/2.0/3.0);
+        c3.at<float>(2) = ((x3*3 + z*30*2)/2.0/3.0);
+        cv::Mat c4 = cv::Mat::zeros(3,1,CV_32F);
+        c4.at<float>(0) = ((x1*3)/2.0/3.0);
+        c4.at<float>(1) = ((x2*3 - h*30*2)/2.0/3.0);
+        c4.at<float>(2) = ((x3*3 + z*30*2)/2.0/3.0);
+/*
+
+    glVertex3f(w*30,h*30,z*30);
+    glVertex3f(w*30,-h*30,z*30);
+    glVertex3f(0,0,0);
+
+    glVertex3f(-w*30,h*30,z*30);
+    glVertex3f(-w*30,-h*30,z*30);
+    glVertex3f(0,0,0);
+
+    glVertex3f(-w*30,h*30,z*30);
+    glVertex3f(w*30,h*30,z*30);
+    glVertex3f(0,0,0);
+
+    glVertex3f(-w*30,-h*30,z*30);
+    glVertex3f(w*30,-h*30,z*30);
+    glVertex3f(0,0,0);
+
+    *//*
         cv::Mat ponto = vpRefMPs[0]->GetWorldPos();
         cout << endl << endl << endl << "VPREFMPS" << endl;
         cout << "Ponto: [" << ponto.at<float>(0) << ", "
@@ -222,6 +245,7 @@ void MapDrawer::DrawMapPoints()
         cout << "c2: " << distance(c2, ponto) << endl;
         cout << "c3: " << distance(c3, ponto) << endl;
         cout << "c4: " << distance(c4, ponto) << endl;
+
 
         glLineWidth(mCameraLineWidth);
         glBegin(GL_LINES);
@@ -241,7 +265,8 @@ void MapDrawer::DrawMapPoints()
 
         glEnd();
 
-    }
+
+    }*/
     // if (vpMPs.size() > 0) {
     //     cout << endl << endl << endl << "VPMPS" << endl;
     //     for (int i = 0; i<vpMPs.size();i++) {
@@ -276,11 +301,11 @@ void MapDrawer::DrawMapPoints()
     }
     glEnd();
 
-    glPointSize(mPointSize);
+    glPointSize(mPointSize*5);
     glBegin(GL_POINTS);
     // glLineWidth(mPointSize);
     // glBegin(GL_LINE_STRIP);
-    glColor3f(1.0,1.0,0.0);
+    glColor3f(1.0,0.0,0.0);
 
     for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
     {
@@ -396,6 +421,8 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
     const float h = w*0.6;
     const float z = w*0.9;
 
+    const vector<MapPoint*> &vpRefMPs = mpMap->GetReferenceMapPoints();
+
     glPushMatrix();
 
 #ifdef HAVE_GLES
@@ -455,6 +482,72 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
     glVertex3f(0,0,0);
     glEnd();
 
+    if (vpRefMPs.size() > 0) {
+        cv::Mat c1 = cv::Mat::zeros(3,1,CV_32F);
+        c1.at<float>(0) = (h*z-(z*-h));
+        c1.at<float>(1) = (z*w-(w*z));
+        c1.at<float>(2) = ((w*-h) - (h*w));
+        cv::Mat c2 = cv::Mat::zeros(3,1,CV_32F);
+        c2.at<float>(0) = (h*z-(z*-h));
+        c2.at<float>(1) = (z*-w-(-w*z));
+        c2.at<float>(2) = ((-w*-h) - (h*-w));
+        cv::Mat c3 = cv::Mat::zeros(3,1,CV_32F);
+        c3.at<float>(0) = (h*z-z*h);
+        c3.at<float>(1) = (z*w-(-w*z));
+        c3.at<float>(2) = (-w*h-h*w);
+        cv::Mat c4 = cv::Mat::zeros(3,1,CV_32F);
+        c4.at<float>(0) = (-h*z-z*-h);
+        c4.at<float>(1) = (z*w-(-w*z));
+        c4.at<float>(2) = (-w*-h - (-h*w));
+        /*
+
+        glVertex3f(w*30,h*30,z*30);
+        glVertex3f(w*30,-h*30,z*30);
+        glVertex3f(0,0,0);
+
+        glVertex3f(-w*30,h*30,z*30);
+        glVertex3f(-w*30,-h*30,z*30);
+        glVertex3f(0,0,0);
+
+        glVertex3f(-w*30,h*30,z*30);
+        glVertex3f(w*30,h*30,z*30);
+        glVertex3f(0,0,0);
+
+        glVertex3f(-w*30,-h*30,z*30);
+        glVertex3f(w*30,-h*30,z*30);
+        glVertex3f(0,0,0);
+
+        */
+
+        cv::Mat ponto = vpRefMPs[50]->GetWorldPos();
+        cout << endl << endl << endl << "VPREFMPS" << endl;
+        cout << "Ponto: [" << ponto.at<float>(0) << ", "
+                            << ponto.at<float>(1) << ", "  
+                            << ponto.at<float>(2) << "]"<< endl;
+        cout << "c1: " << distance(c1, ponto) << endl;
+        cout << "c2: " << distance(c2, ponto) << endl;
+        cout << "c3: " << distance(c3, ponto) << endl;
+        cout << "c4: " << distance(c4, ponto) << endl;
+
+
+        /*glLineWidth(mCameraLineWidth);
+        glBegin(GL_LINES);
+        glColor3f(1.0,0.0,0.0);
+
+        glVertex3f(ponto.at<float>(0),ponto.at<float>(1),ponto.at<float>(2));
+        glVertex3f(c1.at<float>(0),c1.at<float>(1),c1.at<float>(2));
+
+        glVertex3f(ponto.at<float>(0),ponto.at<float>(1),ponto.at<float>(2));
+        glVertex3f(c2.at<float>(0),c2.at<float>(1),c2.at<float>(2));
+
+        glVertex3f(ponto.at<float>(0),ponto.at<float>(1),ponto.at<float>(2));
+        glVertex3f(c3.at<float>(0),c3.at<float>(1),c3.at<float>(2));
+
+        glVertex3f(ponto.at<float>(0),ponto.at<float>(1),ponto.at<float>(2));
+        glVertex3f(c4.at<float>(0),c4.at<float>(1),c4.at<float>(2));
+
+        glEnd();*/
+    }
     glPopMatrix();
 }
 
