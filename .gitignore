@@ -24,7 +24,7 @@ lib/
 
 # imagens geradas
 */*/rgb/
+*/*/depth/
 *.mp4
-*/*/*.txt
 .vscode/
 out
