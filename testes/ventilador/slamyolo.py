@@ -40,6 +40,10 @@ for i, foto in enumerate(fotos[2:]): # colocando o timestamp e o endereco das im
     if (vezesyolo < 5):
         vezesyolo += 1
         f.write(foto.split('\n')[0] + objs + '\n')
+    else:
+        f.write(foto.split('\n')[0] + '\n')
+        
+
 
 f.close()
 saida.close()

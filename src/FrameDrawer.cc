@@ -49,11 +49,11 @@ cv::Mat FrameDrawer::DrawFrame()
     int state; // Tracking state
 
 
-    cout << "Image: " << name << ", ";
-    cout << position.at<int>(0) << " ";
-    cout << position.at<int>(1) << " ";
-    cout << position.at<int>(2) << " ";
-    cout << position.at<int>(3) << endl << endl;
+    // cout << "Image: " << name << ", ";
+    // cout << position.at<int>(0) << " ";
+    // cout << position.at<int>(1) << " ";
+    // cout << position.at<int>(2) << " ";
+    // cout << position.at<int>(3) << endl << endl;
 
     //Copy variables within scoped mutex
     {
@@ -140,13 +140,15 @@ cv::Mat FrameDrawer::DrawFrame()
         }
     }
 
-    cv::Point2f rec1, rec2;
-    rec1.x = position.at<int>(1);
-    rec1.y = position.at<int>(0);
-    rec2.x = position.at<int>(2);
-    rec2.y = position.at<int>(3);
+    for (int i = 0; i < position.size(); i++) {
+        cv::Point2f rec1, rec2;
+        rec1.x = position[i].at<int>(1);
+        rec1.y = position[i].at<int>(0);
+        rec2.x = position[i].at<int>(2);
+        rec2.y = position[i].at<int>(3);
 
-    cv::rectangle(im,rec1,rec2,cv::Scalar(255,0,0), 5);
+        cv::rectangle(im,rec1,rec2,cv::Scalar(255,0,0), 5);
+    }
 
     cv::Mat imWithInfo;
     DrawTextInfo(im,state, imWithInfo);

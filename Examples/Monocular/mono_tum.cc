@@ -34,7 +34,7 @@
 using namespace std;
 
 void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,
-                vector<double> &vTimestamps, vector<string> &vstrLabel, vector<cv::Mat> &vobjPosition);
+                vector<double> &vTimestamps, vector<vector<string> > &vstrLabel, vector<vector<cv::Mat> > &vobjPosition);
 
 int main(int argc, char **argv)
 {
@@ -47,8 +47,8 @@ int main(int argc, char **argv)
     // Retrieve paths to images
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
-    vector<string> vstrLabel;
-    vector<cv::Mat> vobjPosition;
+    vector<vector<string> > vstrLabel;
+    vector<vector<cv::Mat> > vobjPosition;
     string strFile = string(argv[3])+"/rgbm.txt";
     LoadImages(strFile, vstrImageFilenames, vTimestamps, vstrLabel, vobjPosition);
 
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vector<double> &vTimestamps, vector<string> &vstrLabel, vector<cv::Mat> &vobjPosition)
+void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vector<double> &vTimestamps, vector<vector<string> > &vstrLabel, vector<vector<cv::Mat> > &vobjPosition)
 {
     ifstream f;
     f.open(strFile.c_str());
@@ -161,20 +161,27 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
             vTimestamps.push_back(t);
             ss >> sRGB;
             vstrImageFilenames.push_back(sRGB);
-            string name;
-            ss >> name;
-            vstrLabel.push_back(name);
-            cv::Mat coord = cv::Mat::zeros(4,1,CV_32SC1);
-            int p;
-            ss >> p;
-            coord.at<int>(0) = p;
-            ss >> p;
-            coord.at<int>(1) = p;
-            ss >> p;
-            coord.at<int>(2) = p;
-            ss >> p;
-            coord.at<int>(3) = p;
-            vobjPosition.push_back(coord);
+            vector<string> names;
+            vector<cv::Mat> positions;
+            while(!ss.eof()) {
+                string name;
+                ss >> name;
+                names.push_back(name);
+
+                cv::Mat coord = cv::Mat::zeros(4,1,CV_32SC1);
+                int p;
+                ss >> p;
+                coord.at<int>(0) = p;
+                ss >> p;
+                coord.at<int>(1) = p;
+                ss >> p;
+                coord.at<int>(2) = p;
+                ss >> p;
+                coord.at<int>(3) = p;
+                positions.push_back(coord);
+            }
+            vstrLabel.push_back(names);
+            vobjPosition.push_back(positions);
         }
     }
 }
