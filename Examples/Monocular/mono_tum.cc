@@ -34,7 +34,7 @@
 using namespace std;
 
 void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,
-                vector<double> &vTimestamps);
+                vector<double> &vTimestamps, vector<string> &vstrLabel, vector<cv::Mat> &vobjPosition);
 
 int main(int argc, char **argv)
 {
@@ -47,8 +47,10 @@ int main(int argc, char **argv)
     // Retrieve paths to images
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
-    string strFile = string(argv[3])+"/rgb.txt";
-    LoadImages(strFile, vstrImageFilenames, vTimestamps);
+    vector<string> vstrLabel;
+    vector<cv::Mat> vobjPosition;
+    string strFile = string(argv[3])+"/rgbm.txt";
+    LoadImages(strFile, vstrImageFilenames, vTimestamps, vstrLabel, vobjPosition);
 
     int nImages = vstrImageFilenames.size();
 
@@ -71,6 +73,12 @@ int main(int argc, char **argv)
         im = cv::imread(string(argv[3])+"/"+vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
         double tframe = vTimestamps[ni];
 
+        // cout << "Image " << ni + 1 << ": " << vstrLabel[ni] << ", ";
+        // cout << vobjPosition[ni].at<int>(0) << " ";
+        // cout << vobjPosition[ni].at<int>(1) << " ";
+        // cout << vobjPosition[ni].at<int>(2) << " ";
+        // cout << vobjPosition[ni].at<int>(3) << endl << endl;
+
         if(im.empty())
         {
             cerr << endl << "Failed to load image at: "
@@ -85,7 +93,7 @@ int main(int argc, char **argv)
 #endif
 
         // Pass the image to the SLAM system
-        SLAM.TrackMonocular(im,tframe);
+        SLAM.TrackMonocular(im,tframe, vstrLabel[ni], vobjPosition[ni]);
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -128,7 +136,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vector<double> &vTimestamps)
+void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vector<double> &vTimestamps, vector<string> &vstrLabel, vector<cv::Mat> &vobjPosition)
 {
     ifstream f;
     f.open(strFile.c_str());
@@ -153,6 +161,20 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
             vTimestamps.push_back(t);
             ss >> sRGB;
             vstrImageFilenames.push_back(sRGB);
+            string name;
+            ss >> name;
+            vstrLabel.push_back(name);
+            cv::Mat coord = cv::Mat::zeros(4,1,CV_32SC1);
+            int p;
+            ss >> p;
+            coord.at<int>(0) = p;
+            ss >> p;
+            coord.at<int>(1) = p;
+            ss >> p;
+            coord.at<int>(2) = p;
+            ss >> p;
+            coord.at<int>(3) = p;
+            vobjPosition.push_back(coord);
         }
     }
 }

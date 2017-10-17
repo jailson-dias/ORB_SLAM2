@@ -48,6 +48,13 @@ cv::Mat FrameDrawer::DrawFrame()
     vector<bool> vbVO, vbMap; // Tracked MapPoints in current frame
     int state; // Tracking state
 
+
+    cout << "Image: " << name << ", ";
+    cout << position.at<int>(0) << " ";
+    cout << position.at<int>(1) << " ";
+    cout << position.at<int>(2) << " ";
+    cout << position.at<int>(3) << endl << endl;
+
     //Copy variables within scoped mutex
     {
         unique_lock<mutex> lock(mMutex);
@@ -97,17 +104,21 @@ cv::Mat FrameDrawer::DrawFrame()
         const float r = 5;
         const int n = vCurrentKeys.size();
         int np = (mpMap->GetAllMapPoints()).size();
-        cout << "n: " << n << " - np: " << np << endl; 
+        // cout << "n: " << n << " - np: " << np << endl; 
         for(int i=0;i<n;i++)
         {
             if(vbVO[i] || vbMap[i])
             {
-                cv::Point2f pt1,pt2;
+                cv::Point2f pt1,pt2, pt3, pt4;
                 pt1.x=vCurrentKeys[i].pt.x-r;
                 pt1.y=vCurrentKeys[i].pt.y-r;
                 pt2.x=vCurrentKeys[i].pt.x+r;
                 pt2.y=vCurrentKeys[i].pt.y+r;
 
+                pt3.x=300;
+                pt3.y=300;
+                pt4.x=310;
+                pt4.y=310;
                 // cout << "(" << pt1.x << ", " << pt1.y << ")  p1" << endl;
                 // cout << "(" << pt2.x << ", " << pt2.y << ")  p2" << endl;
 
@@ -115,6 +126,7 @@ cv::Mat FrameDrawer::DrawFrame()
                 if(vbMap[i])
                 {
                     cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,255));
+                    cv::rectangle(im,pt3,pt4,cv::Scalar(0,0,255));
                     cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1);
                     mnTracked++;
                 }
@@ -127,6 +139,14 @@ cv::Mat FrameDrawer::DrawFrame()
             }
         }
     }
+
+    cv::Point2f rec1, rec2;
+    rec1.x = position.at<int>(1);
+    rec1.y = position.at<int>(0);
+    rec2.x = position.at<int>(2);
+    rec2.y = position.at<int>(3);
+
+    cv::rectangle(im,rec1,rec2,cv::Scalar(255,0,0), 5);
 
     cv::Mat imWithInfo;
     DrawTextInfo(im,state, imWithInfo);
@@ -182,6 +202,9 @@ void FrameDrawer::Update(Tracking *pTracker)
     mvbVO = vector<bool>(N,false);
     mvbMap = vector<bool>(N,false);
     mbOnlyTracking = pTracker->mbOnlyTracking;
+
+    name = pTracker->name;
+    position = pTracker->position;
 
 
     if(pTracker->mLastProcessedState==Tracking::NOT_INITIALIZED)

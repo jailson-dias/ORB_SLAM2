@@ -186,11 +186,11 @@
 902 refrigerator 0 412 719 479
 903 refrigerator 0 409 719 479
 904 refrigerator 0 404 719 479
-905 oven  refrigerator 0 397 719 478
-906 oven  refrigerator 0 392 713 477
-907 oven  refrigerator 3 386 706 475
+905 oven,refrigerator 0 397 719 478
+906 oven,refrigerator 0 392 713 477
+907 oven,refrigerator 3 386 706 475
 908 oven 5 383 701 473
-909 oven  refrigerator 8 383 698 469
+909 oven,refrigerator 8 383 698 469
 910 refrigerator 7 384 696 462
 911 refrigerator 1 380 697 457
 912 refrigerator 0 376 700 454
@@ -207,8 +207,8 @@
 933 suitcase 0 9 435 321
 942 refrigerator 0 391 698 460
 943 refrigerator 35 102 452 479
-943 oven  refrigerator 3 395 703 467
-944 oven  refrigerator 3 400 706 478
+943 oven,refrigerator 3 395 703 467
+944 oven,refrigerator 3 400 706 478
 944 refrigerator 73 111 456 479
 945 oven 1 405 711 479
 945 refrigerator 74 114 462 479
@@ -219,11 +219,11 @@
 948 toilet 95 125 471 477
 949 toilet 101 130 471 476
 950 toilet 105 134 473 477
-951 toilet  refrigerator 109 137 473 476
-952 toilet  refrigerator 111 138 473 476
-953 toilet  refrigerator 112 137 473 476
-954 toilet  refrigerator 110 135 474 477
-955 toilet  refrigerator 108 130 474 477
+951 toilet,refrigerator 109 137 473 476
+952 toilet,refrigerator 111 138 473 476
+953 toilet,refrigerator 112 137 473 476
+954 toilet,refrigerator 110 135 474 477
+955 toilet,refrigerator 108 130 474 477
 956 toilet 106 125 473 477
 957 toilet 101 121 472 478
 958 refrigerator 6 421 710 473
@@ -242,7 +242,7 @@
 977 refrigerator 0 7 422 330
 978 refrigerator 0 8 420 329
 979 refrigerator 0 8 419 329
-980 suitcase  refrigerator 0 9 418 330
+980 suitcase,refrigerator 0 9 418 330
 981 suitcase 0 8 420 334
 986 refrigerator 2 0 442 378
 987 refrigerator 1 0 445 386
@@ -283,10 +283,10 @@
 1044 refrigerator 0 18 453 309
 1045 refrigerator 0 18 443 306
 1046 refrigerator 0 17 438 305
-1047 suitcase  refrigerator 0 15 433 303
-1048 suitcase  refrigerator 0 16 428 301
-1049 suitcase  refrigerator 0 17 422 300
-1050 suitcase  refrigerator 0 18 420 299
+1047 suitcase,refrigerator 0 15 433 303
+1048 suitcase,refrigerator 0 16 428 301
+1049 suitcase,refrigerator 0 17 422 300
+1050 suitcase,refrigerator 0 18 420 299
 1051 refrigerator 0 18 420 299
 1052 refrigerator 0 15 423 301
 1068 refrigerator 0 56 493 394

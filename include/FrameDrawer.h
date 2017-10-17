@@ -65,6 +65,9 @@ protected:
 
     Map* mpMap;
 
+    string name;
+    cv::Mat position;
+
     std::mutex mMutex;
 };
 

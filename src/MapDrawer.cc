@@ -519,15 +519,15 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
 
         */
 
-        cv::Mat ponto = vpRefMPs[50]->GetWorldPos();
-        cout << endl << endl << endl << "VPREFMPS" << endl;
-        cout << "Ponto: [" << ponto.at<float>(0) << ", "
-                            << ponto.at<float>(1) << ", "  
-                            << ponto.at<float>(2) << "]"<< endl;
-        cout << "c1: " << distance(c1, ponto) << endl;
-        cout << "c2: " << distance(c2, ponto) << endl;
-        cout << "c3: " << distance(c3, ponto) << endl;
-        cout << "c4: " << distance(c4, ponto) << endl;
+        // cv::Mat ponto = vpRefMPs[50]->GetWorldPos();
+        // cout << endl << endl << endl << "VPREFMPS" << endl;
+        // cout << "Ponto: [" << ponto.at<float>(0) << ", "
+        //                     << ponto.at<float>(1) << ", "  
+        //                     << ponto.at<float>(2) << "]"<< endl;
+        // cout << "c1: " << distance(c1, ponto) << endl;
+        // cout << "c2: " << distance(c2, ponto) << endl;
+        // cout << "c3: " << distance(c3, ponto) << endl;
+        // cout << "c4: " << distance(c4, ponto) << endl;
 
 
         /*glLineWidth(mCameraLineWidth);
