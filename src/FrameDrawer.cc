@@ -126,7 +126,7 @@ cv::Mat FrameDrawer::DrawFrame()
                 if(vbMap[i])
                 {
                     cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,255));
-                    cv::rectangle(im,pt3,pt4,cv::Scalar(0,0,255));
+                    // cv::rectangle(im,pt3,pt4,cv::Scalar(0,0,255));
                     cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1);
                     mnTracked++;
                 }
@@ -141,13 +141,18 @@ cv::Mat FrameDrawer::DrawFrame()
     }
 
     for (int i = 0; i < position.size(); i++) {
-        cv::Point2f rec1, rec2;
+        cv::Point2f rec1, rec2, ptname;
         rec1.x = position[i].at<int>(1);
         rec1.y = position[i].at<int>(0);
         rec2.x = position[i].at<int>(2);
         rec2.y = position[i].at<int>(3);
 
+
+        ptname.x = position[i].at<int>(1) + 30;
+        ptname.y = position[i].at<int>(0) + 50;
+
         cv::rectangle(im,rec1,rec2,cv::Scalar(255,0,0), 5);
+        cv::putText(im,name[i], ptname, cv::FONT_HERSHEY_COMPLEX_SMALL, 2, cv::Scalar(0,0,255),1,CV_AA);
     }
 
     cv::Mat imWithInfo;
