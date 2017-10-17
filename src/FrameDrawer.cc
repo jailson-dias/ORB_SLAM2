@@ -96,6 +96,8 @@ cv::Mat FrameDrawer::DrawFrame()
         mnTrackedVO=0;
         const float r = 5;
         const int n = vCurrentKeys.size();
+        int np = (mpMap->GetAllMapPoints()).size();
+        cout << "n: " << n << " - np: " << np << endl; 
         for(int i=0;i<n;i++)
         {
             if(vbVO[i] || vbMap[i])
@@ -106,10 +108,13 @@ cv::Mat FrameDrawer::DrawFrame()
                 pt2.x=vCurrentKeys[i].pt.x+r;
                 pt2.y=vCurrentKeys[i].pt.y+r;
 
+                // cout << "(" << pt1.x << ", " << pt1.y << ")  p1" << endl;
+                // cout << "(" << pt2.x << ", " << pt2.y << ")  p2" << endl;
+
                 // This is a match to a MapPoint in the map
                 if(vbMap[i])
                 {
-                    cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,0));
+                    cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,255));
                     cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1);
                     mnTracked++;
                 }
