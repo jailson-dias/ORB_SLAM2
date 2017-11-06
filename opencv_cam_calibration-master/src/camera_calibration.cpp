@@ -8,6 +8,10 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+# define _CRT_SECURE_NO_WARNINGS
+#endif
+
 using namespace cv;
 using namespace std;
 
@@ -290,7 +294,7 @@ int main(int argc, char* argv[])
                 if( s.calibrationPattern == Settings::CHESSBOARD)
                 {
                     Mat viewGray;
-                    cvtColor(view, viewGray, CV_BGR2GRAY);
+                    cvtColor(view, viewGray, COLOR_BGR2GRAY);
                     cornerSubPix( viewGray, pointBuf, Size(11,11),
                         Size(-1,-1), TermCriteria( CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1 ));
                 }
@@ -330,8 +334,10 @@ int main(int argc, char* argv[])
         //------------------------- Video capture  output  undistorted ------------------------------
         if( mode == CALIBRATED && s.showUndistorsed )
         {
-            Mat temp = view.clone();
-            undistort(temp, view, cameraMatrix, distCoeffs);
+            cout << "Terminou a fase de calibração " << i << endl;
+            // Mat temp = view.clone();
+            // undistort(temp, view, cameraMatrix, distCoeffs);
+            // cout << "Terminou a fase de calibração 2" << endl;
         }
 
         //------------------------------ Show image and check for input commands -------------------
@@ -544,10 +550,26 @@ bool runCalibrationAndSave(Settings& s, Size imageSize, Mat&  cameraMatrix, Mat&
     bool ok = runCalibration(s,imageSize, cameraMatrix, distCoeffs, imagePoints, rvecs, tvecs,
                              reprojErrs, totalAvgErr);
     cout << (ok ? "Calibration succeeded" : "Calibration failed")
-        << ". avg re projection error = "  << totalAvgErr ;
+        << ". avg re projection error = "  << totalAvgErr << endl;
 
-    if( ok )
-        saveCameraParams( s, imageSize, cameraMatrix, distCoeffs, rvecs ,tvecs, reprojErrs,
-                            imagePoints, totalAvgErr);
+
+    cout << "Camera calibration" << endl;
+
+    cout << cameraMatrix << endl;
+    cout << distCoeffs << endl;
+
+    // cout << "fx: " << cameraMatrix.at<float>(0,0) << "  fy: " << cameraMatrix.at<float>(0,1) << "  fy: " << cameraMatrix.at<float>(0,2) << endl;
+    // cout << "fx: " << cameraMatrix.at<float>(1,0) << "  fy: " << cameraMatrix.at<float>(1,1) << "  fy: " << cameraMatrix.at<float>(1,2) << endl;
+    // cout << "fx: " << cameraMatrix.at<float>(2,0) << "  fy: " << cameraMatrix.at<float>(2,1) << "  fy: " << cameraMatrix.at<float>(2,2) << endl;
+    // cout << "cx: " << cameraMatrix.at<float>(0,2) << "  cy: " << cameraMatrix.at<float>(1,2) << endl;
+
+
+    // cout << "k1: " << distCoeffs.at<float>(0) << "  k2: " << distCoeffs.at<float>(1) << endl;
+    // cout << "p1: " << distCoeffs.at<float>(2) << "  p2: " << distCoeffs.at<float>(3) << endl;
+    // cout << "k3: " << distCoeffs.at<float>(4) << endl;
+
+    // if( ok )
+    //     saveCameraParams( s, imageSize, cameraMatrix, distCoeffs, rvecs ,tvecs, reprojErrs,
+    //                         imagePoints, totalAvgErr);
     return ok;
 }
