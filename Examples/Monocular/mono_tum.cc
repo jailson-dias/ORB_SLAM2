@@ -147,6 +147,7 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
     getline(f,s0);
     getline(f,s0);
 
+    int xxx = 1;
     while(!f.eof())
     {
         string s;
@@ -154,7 +155,7 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
         if(!s.empty())
         {
             stringstream ss;
-            ss << s;
+            ss.str(s);
             double t;
             string sRGB;
             ss >> t;
@@ -163,9 +164,11 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
             vstrImageFilenames.push_back(sRGB);
             vector<string> names;
             vector<cv::Mat> positions;
+            // cout << "Foto: " << sRGB << endl;
             while(!ss.eof()) {
                 string name;
                 ss >> name;
+                // co
                 names.push_back(name);
 
                 cv::Mat coord = cv::Mat::zeros(4,1,CV_32SC1);
@@ -179,7 +182,9 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
                 ss >> p;
                 coord.at<int>(3) = p;
                 positions.push_back(coord);
+                // cout << name << "  end" << endl;
             }
+            // cout << "fim line: " << xxx++ << endl;
             vstrLabel.push_back(names);
             vobjPosition.push_back(positions);
         }

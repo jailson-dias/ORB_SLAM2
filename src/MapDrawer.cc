@@ -60,7 +60,7 @@ void line(set<MapPoint*> points) {
         // glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
 
     }
-    cout << "meio" << endl;
+    // cout << "meio" << endl;
     vector<cv::Mat> res;
     // res.push_back(a);
     // cout << "copy 2" << endl;
@@ -306,15 +306,25 @@ void MapDrawer::DrawMapPoints()
     // glLineWidth(mPointSize);
     // glBegin(GL_LINE_STRIP);
     glColor3f(1.0,0.0,0.0);
-
+    // cout << "inicio" << endl;
     for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
     {
         if((*sit)->isBad())
             continue;
         cv::Mat pos = (*sit)->GetWorldPos();
-        glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
+        if((*sit)->mnId == 500) {
+            glColor3f(0.0,0.0,1.0);
+            glPointSize(mPointSize*10);
+            glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
+            // cout << pos.at<float>(0) << ", " << pos.at<float>(1) << ", " << pos.at<float>(2)<< endl;
+            glPointSize(mPointSize*5);
+            glColor3f(1.0,0.0,0.0);
+        } else {
+            glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
+        }
 
     }
+    // cout << "fim" << endl<< endl;
     // line(spRefMPs);
     glEnd();
 }
@@ -461,7 +471,7 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
 
     glEnd();
 
-    glBegin(GL_TRIANGLES);
+   /* glBegin(GL_TRIANGLES);
     // fora
     glColor3f(0.0f,1.0f,1.0f);
     
@@ -499,7 +509,7 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
         c4.at<float>(0) = (-h*z-z*-h);
         c4.at<float>(1) = (z*w-(-w*z));
         c4.at<float>(2) = (-w*-h - (-h*w));
-        /*
+      *//*
 
         glVertex3f(w*30,h*30,z*30);
         glVertex3f(w*30,-h*30,z*30);
@@ -516,7 +526,6 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
         glVertex3f(-w*30,-h*30,z*30);
         glVertex3f(w*30,-h*30,z*30);
         glVertex3f(0,0,0);
-
         */
 
         // cv::Mat ponto = vpRefMPs[50]->GetWorldPos();
@@ -547,7 +556,7 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
         glVertex3f(c4.at<float>(0),c4.at<float>(1),c4.at<float>(2));
 
         glEnd();*/
-    }
+    // }
     glPopMatrix();
 }
 

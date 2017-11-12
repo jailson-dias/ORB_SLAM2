@@ -265,7 +265,9 @@ cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp,
 
     name = vstrLabel;
     position = vobjPosition;
+
     Track();
+    // cout << "Camera: " << mCurrentFrame.GetCameraCenter() << endl << endl << endl;
 
     return mCurrentFrame.mTcw.clone();
 }
@@ -469,8 +471,10 @@ void Tracking::Track()
             // with those points so we discard them in the frame.
             for(int i=0; i<mCurrentFrame.N;i++)
             {
-                if(mCurrentFrame.mvpMapPoints[i] && mCurrentFrame.mvbOutlier[i])
+                if(mCurrentFrame.mvpMapPoints[i] && mCurrentFrame.mvbOutlier[i]) {
                     mCurrentFrame.mvpMapPoints[i]=static_cast<MapPoint*>(NULL);
+                    // cout << "teste: " << i << endl;
+                }
             }
         }
 
@@ -499,6 +503,7 @@ void Tracking::Track()
         mlpReferences.push_back(mpReferenceKF);
         mlFrameTimes.push_back(mCurrentFrame.mTimeStamp);
         mlbLost.push_back(mState==LOST);
+        // cout << "Não esta mostrando pelo menos um ponto na tela, no frame draw" << endl;
     }
     else
     {
@@ -507,6 +512,7 @@ void Tracking::Track()
         mlpReferences.push_back(mlpReferences.back());
         mlFrameTimes.push_back(mlFrameTimes.back());
         mlbLost.push_back(mState==LOST);
+        // cout << "Não esta mostrando nenhum ponto na tela, no frame draw" << endl;
     }
 
 }
@@ -532,7 +538,7 @@ void Tracking::StereoInitialization()
             if(z>0)
             {
                 cv::Mat x3D = mCurrentFrame.UnprojectStereo(i);
-                MapPoint* pNewMP = new MapPoint(x3D,pKFini,mpMap);
+                MapPoint* pNewMP = new MapPoint(x3D,pKFini,mpMap,i,i);
                 pNewMP->AddObservation(pKFini,i);
                 pKFini->AddMapPoint(pNewMP,i);
                 pNewMP->ComputeDistinctiveDescriptors();
@@ -572,7 +578,7 @@ void Tracking::MonocularInitialization()
     if(!mpInitializer)
     {
         // Set Reference Frame
-        if(mCurrentFrame.mvKeys.size()>100)
+        if(mCurrentFrame.mvKeys.size()>50)
         {
             mInitialFrame = Frame(mCurrentFrame);
             mLastFrame = Frame(mCurrentFrame);
@@ -593,7 +599,7 @@ void Tracking::MonocularInitialization()
     else
     {
         // Try to initialize
-        if((int)mCurrentFrame.mvKeys.size()<=100)
+        if((int)mCurrentFrame.mvKeys.size()<=50)
         {
             delete mpInitializer;
             mpInitializer = static_cast<Initializer*>(NULL);
@@ -654,6 +660,9 @@ void Tracking::CreateInitialMapMonocular()
     mpMap->AddKeyFrame(pKFini);
     mpMap->AddKeyFrame(pKFcur);
 
+
+    cout << "comecou" << endl;
+
     // Create MapPoints and asscoiate to keyframes
     for(size_t i=0; i<mvIniMatches.size();i++)
     {
@@ -686,7 +695,7 @@ void Tracking::CreateInitialMapMonocular()
 
 
 
-        MapPoint* pMP = new MapPoint(worldPos,pKFcur,mpMap);
+        MapPoint* pMP = new MapPoint(worldPos,pKFcur,mpMap,i,i);
 
         pKFini->AddMapPoint(pMP,i);
         pKFcur->AddMapPoint(pMP,mvIniMatches[i]);
@@ -1140,7 +1149,7 @@ void Tracking::CreateNewKeyFrame()
                 if(bCreateNew)
                 {
                     cv::Mat x3D = mCurrentFrame.UnprojectStereo(i);
-                    MapPoint* pNewMP = new MapPoint(x3D,pKF,mpMap);
+                    MapPoint* pNewMP = new MapPoint(x3D,pKF,mpMap,i,i);
                     pNewMP->AddObservation(pKF,i);
                     pKF->AddMapPoint(pNewMP,i);
                     pNewMP->ComputeDistinctiveDescriptors();

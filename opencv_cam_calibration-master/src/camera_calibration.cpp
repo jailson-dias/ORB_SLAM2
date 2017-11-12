@@ -334,9 +334,9 @@ int main(int argc, char* argv[])
         //------------------------- Video capture  output  undistorted ------------------------------
         if( mode == CALIBRATED && s.showUndistorsed )
         {
-            cout << "Terminou a fase de calibração " << i << endl;
-            // Mat temp = view.clone();
-            // undistort(temp, view, cameraMatrix, distCoeffs);
+            // cout << "Terminou a fase de calibração " << i << endl;
+            Mat temp = view.clone();
+            undistort(temp, view, cameraMatrix, distCoeffs);
             // cout << "Terminou a fase de calibração 2" << endl;
         }
 
@@ -555,21 +555,24 @@ bool runCalibrationAndSave(Settings& s, Size imageSize, Mat&  cameraMatrix, Mat&
 
     cout << "Camera calibration" << endl;
 
+    // Mat m;
+    // cameraMatrix.copyTo(m);
     cout << cameraMatrix << endl;
     cout << distCoeffs << endl;
 
-    // cout << "fx: " << cameraMatrix.at<float>(0,0) << "  fy: " << cameraMatrix.at<float>(0,1) << "  fy: " << cameraMatrix.at<float>(0,2) << endl;
-    // cout << "fx: " << cameraMatrix.at<float>(1,0) << "  fy: " << cameraMatrix.at<float>(1,1) << "  fy: " << cameraMatrix.at<float>(1,2) << endl;
-    // cout << "fx: " << cameraMatrix.at<float>(2,0) << "  fy: " << cameraMatrix.at<float>(2,1) << "  fy: " << cameraMatrix.at<float>(2,2) << endl;
+    // cout << "fx: " << m.at<float>(0,0) << "  fy: " << m.at<float>(0,1) << "  fy: " << m.at<float>(0,2) << endl;
+    // cout << "fx: " << m.at<float>(1,0) << "  fy: " << m.at<float>(1,1) << "  fy: " << m.at<float>(1,2) << endl;
+    // cout << "fx: " << m.at<float>(2,0) << "  fy: " << m.at<float>(2,1) << "  fy: " << m.at<float>(2,2) << endl;
     // cout << "cx: " << cameraMatrix.at<float>(0,2) << "  cy: " << cameraMatrix.at<float>(1,2) << endl;
 
+    // cout << "fx: " << cameraMatrix.at<float>(0,0) << "  fy: " << cameraMatrix.at<float>(1,1) << endl;
 
     // cout << "k1: " << distCoeffs.at<float>(0) << "  k2: " << distCoeffs.at<float>(1) << endl;
     // cout << "p1: " << distCoeffs.at<float>(2) << "  p2: " << distCoeffs.at<float>(3) << endl;
     // cout << "k3: " << distCoeffs.at<float>(4) << endl;
 
-    // if( ok )
-    //     saveCameraParams( s, imageSize, cameraMatrix, distCoeffs, rvecs ,tvecs, reprojErrs,
-    //                         imagePoints, totalAvgErr);
+    if( ok )
+        saveCameraParams( s, imageSize, cameraMatrix, distCoeffs, rvecs ,tvecs, reprojErrs,
+                            imagePoints, totalAvgErr);
     return ok;
 }

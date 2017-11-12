@@ -48,6 +48,8 @@ public:
     // Draw last processed frame.
     cv::Mat DrawFrame();
 
+    vector<pair<cv::Point2f, cv::Point2f> > objectPoints;
+
 protected:
 
     void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);

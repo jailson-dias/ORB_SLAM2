@@ -39,7 +39,7 @@ class Frame;
 class MapPoint
 {
 public:
-    MapPoint(const cv::Mat &Pos, KeyFrame* pRefKF, Map* pMap);
+    MapPoint(const cv::Mat &Pos, KeyFrame* pRefKF, Map* pMap, int ponto, int outro);
     MapPoint(const cv::Mat &Pos,  Map* pMap, Frame* pFrame, const int &idxF);
 
     void SetWorldPos(const cv::Mat &Pos);
@@ -90,6 +90,7 @@ public:
 
     // Variables used by the tracking
     float mTrackProjX;
+    int testePonto;
     float mTrackProjY;
     float mTrackProjXR;
     bool mbTrackInView;

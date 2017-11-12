@@ -30,6 +30,8 @@
 
 #include<mutex>
 
+#include <cmath>
+
 namespace ORB_SLAM2
 {
 
@@ -103,7 +105,7 @@ cv::Mat FrameDrawer::DrawFrame()
         mnTrackedVO=0;
         const float r = 5;
         const int n = vCurrentKeys.size();
-        int np = (mpMap->GetAllMapPoints()).size();
+        // int np = (mpMap->GetAllMapPoints()).size();
         // cout << "n: " << n << " - np: " << np << endl; 
         for(int i=0;i<n;i++)
         {
@@ -154,6 +156,14 @@ cv::Mat FrameDrawer::DrawFrame()
         cv::rectangle(im,rec1,rec2,cv::Scalar(255,0,0), 5);
         cv::putText(im,name[i], ptname, cv::FONT_HERSHEY_COMPLEX_SMALL, 2, cv::Scalar(0,0,255),1,CV_AA);
     }
+    // cv::rectangle(im,cv::Point2f(20,20),cv::Point2f(30,30),cv::Scalar(0,0,255), -1);
+    // cv::rectangle(im,cv::Point2f(40,40),cv::Point2f(50,50),cv::Scalar(0,150,255), 5);
+    // cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1);
+
+    // for (int i=0;i<objectPoints.size();i++) {
+    //     cv::rectangle(im,objectPoints[i].first,objectPoints[i].second,cv::Scalar(0,0,255), -1);
+    // }
+    objectPoints.clear();
 
     cv::Mat imWithInfo;
     DrawTextInfo(im,state, imWithInfo);
@@ -221,11 +231,71 @@ void FrameDrawer::Update(Tracking *pTracker)
     }
     else if(pTracker->mLastProcessedState==Tracking::OK)
     {
+        vector<cv::Mat> centro(position.size());
+        vector<int> firstPoint(position.size(),0);
         for(int i=0;i<N;i++)
         {
             MapPoint* pMP = pTracker->mCurrentFrame.mvpMapPoints[i];
             if(pMP)
             {
+                // cout << "World: " << pMP->GetWorldPos() << endl;
+                // cout << "Normal: " << pMP->GetNormal() << endl;
+                // cout << "Pontos: " << pMP->mTrackProjX << ", "<< pMP->mTrackProjY << endl;
+                // cout << pMP->mnId << endl;
+                // cout << endl;
+                // if (pMP->mnId == 500) {
+                    // for (int i = 0; i < position.size(); i++) {
+                if (pMP->mbTrackInView) {
+                    for (int j = 0;j< position.size();j++) {
+                        cv::Point2f rec1, rec2;
+                        rec1.x = position[j].at<int>(1);
+                        rec1.y = position[j].at<int>(0);
+                        rec2.x = position[j].at<int>(2);
+                        rec2.y = position[j].at<int>(3);
+                        if (pMP->mTrackProjX >= rec1.x && pMP->mTrackProjX <= rec2.x && pMP->mTrackProjY >= rec1.y && pMP->mTrackProjY <= rec2.y) {
+                            cv::Point2f pt1,pt2;
+                            int r = 3;
+                            pt1.x=pMP->mTrackProjX-r;
+                            pt1.y=pMP->mTrackProjY-r;
+                            pt2.x=pMP->mTrackProjX+r;
+                            pt2.y=pMP->mTrackProjY+r;
+                            objectPoints.push_back(make_pair(pt1, pt2));
+                            cv::Mat point3D = pMP->GetNormal();
+                            // cout << "Normal: " << pMP->GetNormal() << endl;
+                            // cout << "Point: " << point3D << endl;
+                            // cout << "Values: " << point3D.at<float>(0) << ", " << point3D.at<float>(1) << ", " << point3D.at<float>(2) << endl << endl;
+                            // pointDistace.push_back(sqrt(pow(point3D.at<float>(0),2) + pow(point3D.at<float>(1),2) + pow(point3D.at<float>(2),2)));
+                            if (firstPoint[j] == 0) {
+                                centro[j] = point3D;
+                                firstPoint[j] = 1;
+                            } else {
+                                centro[j].at<float>(0) = (centro[j].at<float>(0) + point3D.at<float>(0)) / 2;
+                                centro[j].at<float>(1) = (centro[j].at<float>(1) + point3D.at<float>(1)) / 2;
+                                centro[j].at<float>(2) = (centro[j].at<float>(2) + point3D.at<float>(2)) / 2;
+                            }
+                            
+                        }
+                    }
+                }
+
+                    /*if (pMP->mbTrackInView) {
+                        // cout << "Pontos: " << pMP->mTrackProjX << ", "<< pMP->mTrackProjY << endl;
+                        // cv::Mat im;
+                        // mIm.copyTo(im);
+                        int r = 10;
+                        // cv::Point2f pt1,pt2;
+                        teste1.x=pMP->mTrackProjX-r;
+                        teste1.y=pMP->mTrackProjY-r;
+                        teste2.x=pMP->mTrackProjX+r;
+                        teste2.y=pMP->mTrackProjY+r;
+                        // cv::rectangle(im,pt1,pt2,cv::Scalar(20,255,10));
+                    } else {
+                        teste1.x=0;
+                        teste1.y=0;
+                        teste2.x=5;
+                        teste2.y=5;
+                    }*/
+                // }
                 if(!pTracker->mCurrentFrame.mvbOutlier[i])
                 {
                     if(pMP->Observations()>0)
@@ -234,6 +304,22 @@ void FrameDrawer::Update(Tracking *pTracker)
                         mvbVO[i]=true;
                 }
             }
+        }
+        if (position.size()) {
+            cv::Mat cameraPose = pTracker->mCurrentFrame.GetCameraCenter();
+            vector<pair<float, string> > distanceObjects;
+            for (int j = 0;j<position.size();j++) {
+                if (firstPoint[j] == 1) {
+                    distanceObjects.push_back(make_pair(sqrt(pow(centro[j].at<float>(0) - cameraPose.at<float>(0),2) + pow(centro[j].at<float>(1) - cameraPose.at<float>(1),2) + pow(centro[j].at<float>(2) - cameraPose.at<float>(2),2)),name[j]));
+                    // cout << centro[j] << endl;
+                }
+            }
+            sort(distanceObjects.begin(),distanceObjects.end());
+            for (int j = 0;j<distanceObjects.size();j++) {
+                cout << distanceObjects[j].second << ": " << distanceObjects[j].first << endl;
+            }
+            cout << endl << endl << endl;
+            usleep(1000);
         }
     }
     mState=static_cast<int>(pTracker->mLastProcessedState);

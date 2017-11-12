@@ -435,7 +435,7 @@ void LocalMapping::CreateNewMapPoints()
                 continue;
 
             // Triangulation is succesfull
-            MapPoint* pMP = new MapPoint(x3D,mpCurrentKeyFrame,mpMap);
+            MapPoint* pMP = new MapPoint(x3D,mpCurrentKeyFrame,mpMap,ikp,ikp);
 
             pMP->AddObservation(mpCurrentKeyFrame,idx1);            
             pMP->AddObservation(pKF2,idx2);
