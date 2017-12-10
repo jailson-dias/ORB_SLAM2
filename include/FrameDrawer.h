@@ -39,6 +39,10 @@ class Viewer;
 
 class FrameDrawer
 {
+
+private:
+    void setText();
+    
 public:
     FrameDrawer(Map* pMap);
 
@@ -70,7 +74,11 @@ protected:
     vector<string> name;
     vector<cv::Mat> position;
 
+    bool speak = false;
+
     std::mutex mMutex;
+
+    std::mutex mText;
 };
 
 } //namespace ORB_SLAM

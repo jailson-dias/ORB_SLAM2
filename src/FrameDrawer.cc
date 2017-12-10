@@ -32,13 +32,33 @@
 
 #include <cmath>
 
+#include <thread>
+
 namespace ORB_SLAM2
 {
+void FrameDrawer::setText() 
+{
+    cout << "text an" << endl;
+    while(true) {
+        int acc;
+        cin >> acc;
+        if (acc == 1) {
+            unique_lock<mutex> lock(mText);
+            speak = true;
+            cout << "text in" << endl;
+        } else if(acc== 2) {
+            break;
+        }
+    }
+}
 
 FrameDrawer::FrameDrawer(Map* pMap):mpMap(pMap)
 {
     mState=Tracking::SYSTEM_NOT_READY;
     mIm = cv::Mat(480,640,CV_8UC3, cv::Scalar(0,0,0));
+    
+    std::thread (&FrameDrawer::setText, this).detach(); 
+
 }
 
 cv::Mat FrameDrawer::DrawFrame()
@@ -156,13 +176,7 @@ cv::Mat FrameDrawer::DrawFrame()
         cv::rectangle(im,rec1,rec2,cv::Scalar(255,0,0), 5);
         cv::putText(im,name[i], ptname, cv::FONT_HERSHEY_COMPLEX_SMALL, 2, cv::Scalar(0,0,255),1,CV_AA);
     }
-    // cv::rectangle(im,cv::Point2f(20,20),cv::Point2f(30,30),cv::Scalar(0,0,255), -1);
-    // cv::rectangle(im,cv::Point2f(40,40),cv::Point2f(50,50),cv::Scalar(0,150,255), 5);
-    // cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1);
 
-    // for (int i=0;i<objectPoints.size();i++) {
-    //     cv::rectangle(im,objectPoints[i].first,objectPoints[i].second,cv::Scalar(0,0,255), -1);
-    // }
     objectPoints.clear();
 
     cv::Mat imWithInfo;
@@ -238,13 +252,6 @@ void FrameDrawer::Update(Tracking *pTracker)
             MapPoint* pMP = pTracker->mCurrentFrame.mvpMapPoints[i];
             if(pMP)
             {
-                // cout << "World: " << pMP->GetWorldPos() << endl;
-                // cout << "Normal: " << pMP->GetNormal() << endl;
-                // cout << "Pontos: " << pMP->mTrackProjX << ", "<< pMP->mTrackProjY << endl;
-                // cout << pMP->mnId << endl;
-                // cout << endl;
-                // if (pMP->mnId == 500) {
-                    // for (int i = 0; i < position.size(); i++) {
                 if (pMP->mbTrackInView) {
                     for (int j = 0;j< position.size();j++) {
                         cv::Point2f rec1, rec2;
@@ -261,10 +268,7 @@ void FrameDrawer::Update(Tracking *pTracker)
                             pt2.y=pMP->mTrackProjY+r;
                             objectPoints.push_back(make_pair(pt1, pt2));
                             cv::Mat point3D = pMP->GetNormal();
-                            // cout << "Normal: " << pMP->GetNormal() << endl;
-                            // cout << "Point: " << point3D << endl;
-                            // cout << "Values: " << point3D.at<float>(0) << ", " << point3D.at<float>(1) << ", " << point3D.at<float>(2) << endl << endl;
-                            // pointDistace.push_back(sqrt(pow(point3D.at<float>(0),2) + pow(point3D.at<float>(1),2) + pow(point3D.at<float>(2),2)));
+
                             if (firstPoint[j] == 0) {
                                 centro[j] = point3D;
                                 firstPoint[j] = 1;
@@ -277,25 +281,6 @@ void FrameDrawer::Update(Tracking *pTracker)
                         }
                     }
                 }
-
-                    /*if (pMP->mbTrackInView) {
-                        // cout << "Pontos: " << pMP->mTrackProjX << ", "<< pMP->mTrackProjY << endl;
-                        // cv::Mat im;
-                        // mIm.copyTo(im);
-                        int r = 10;
-                        // cv::Point2f pt1,pt2;
-                        teste1.x=pMP->mTrackProjX-r;
-                        teste1.y=pMP->mTrackProjY-r;
-                        teste2.x=pMP->mTrackProjX+r;
-                        teste2.y=pMP->mTrackProjY+r;
-                        // cv::rectangle(im,pt1,pt2,cv::Scalar(20,255,10));
-                    } else {
-                        teste1.x=0;
-                        teste1.y=0;
-                        teste2.x=5;
-                        teste2.y=5;
-                    }*/
-                // }
                 if(!pTracker->mCurrentFrame.mvbOutlier[i])
                 {
                     if(pMP->Observations()>0)
@@ -315,10 +300,30 @@ void FrameDrawer::Update(Tracking *pTracker)
                 }
             }
             sort(distanceObjects.begin(),distanceObjects.end());
-            for (int j = 0;j<distanceObjects.size();j++) {
-                cout << distanceObjects[j].second << ": " << distanceObjects[j].first << endl;
+            // for (int j = 0;j<distanceObjects.size();j++) {
+            //     cout << distanceObjects[j].second << ": " << distanceObjects[j].first << endl;
+            // }
+            // cout << "distance an" << endl;
+            if (distanceObjects.size() > 0) {
+                unique_lock<mutex> lock(mText);
+                if (speak) {
+                    speak = false;
+
+                    char a[1000] = "";
+
+                    sprintf(a, "curl -X POST -u 05913210-7e6f-45dd-90a9-a0617ff7f8d7:4zpq6ngoVwwW \
+                        --header 'Content-Type: application/json' \
+                        --header 'Accept: audio/wav' \
+                        --data '{\"text\":\"the %s is %.2f meters ahead\"}' \
+                        --output rv2.wav \
+                        'https://stream.watsonplatform.net/text-to-speech/api/v1/synthesize?voice=en-US_AllisonVoice'", (char*)distanceObjects[0].second.c_str(), distanceObjects[0].first);
+                    system(a);
+                    cout << a << endl;
+                    cout << distanceObjects[0].second << ": " << distanceObjects[0].first << endl;
+                }
             }
-            cout << endl << endl << endl;
+            // cout << "distance dp" << endl;
+            // cout << endl << endl << endl;
             usleep(1000);
         }
     }
